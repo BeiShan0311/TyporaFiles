@@ -1,3 +1,5 @@
+
+
 # C语言基础
 
 ## 0. 变量命名
@@ -373,7 +375,282 @@ printf("buffer3:%s\n", buffer3);
 
       `size`必须以参数的形式通过函数传递。
 
-## 13. 
+## 13. **gdb**调试
+
+使用以下命令对一个`.c`进行`gdb`调试：
+
+```cmd
+gcc -g [文件名] # 以debug方式编译C语言文件
+apt install gdb # 下载gdb调试器
+
+gdb [编译好的可执行文件] # 进入gdb调试
+# gdb调试命令
+b [行号] # 在某一行添加断点
+b [函数名] # 在函数入口处添加断点
+
+del [断点序号] # 删除断点
+
+run # 运行函数
+s # 进入函数内部
+n # 进入下一行
+p &[变量] # 打印变量地址
+```
+
+`tip`：使用`gdb`调试检查程序段错误`Segmentation fault (core dumped)`。
+
+```cmd
+root@iZbp11t02fism5k702usgjZ:/home/257class/BasiC/BasiC/pointer# gcc -g demoCharPointer.c
+root@iZbp11t02fism5k702usgjZ:/home/257class/BasiC/BasiC/pointer# gdb a.out
+GNU gdb (Ubuntu 12.1-0ubuntu1~22.04) 12.1
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+--Type <RET> for more, q to quit, c to continue without paging--c
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from a.out...
+(gdb) run
+Starting program: /home/257class/BasiC/BasiC/pointer/a.out 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+len:8
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555555192 in main (argc=1, argv=0x7fffffffe198) at demoCharPointer.c:12
+12          strcpy(ptr, "hello world");
+(gdb) 
+```
+
+会在末尾处打印段错误信息。
+
+## 14. 字符串与字符数组
+
+`字符串`：
+
+- 所有用双引号括起来的都是字符串。
+- 所有字符串都会在末尾处添加一个`\0`作为结束标志。
+- 字符串长度为：`字符个数+1`
+
+`字符数组`：
+
+- 字符数组的大小为数组大小。
+- 使用以下两种方式初始化字符数组时，不会在末尾自动添加`\0`：
+
+```C
+char buffer[BUFFER_SIZE];
+/* 清理脏数据 */
+memset(buffer, 0, sizeof(buffer));
+// 字符赋值方式1:
+buffer[0] = 'h';
+buffer[1] = 'e';
+// 字符赋值方式4:
+char buffer3[BUFFER_SIZE] = {'h', 'e', 'l','l', 'o'}; 
+```
+
+- 使用以下方式初始化字符数组会在末尾添加`\0`：
+
+```c
+// 字符赋值方式2:
+strcpy(buffer, "hello world");
+// 字符赋值方式3:
+char buffer2[BUFFER_SIZE] = "hello world"; 
+```
+
+- 对字符数组=赋值时，后面跟着的字符串长度可能会超出字符数组的大小，这个时候就有可能访问到一些不能被访问的内存，这个操作就叫做`踩内存`，而这种操作是不被允许的。
+
+字符串和字符数组的内存分配：
+
+- 字符数组在声明时自动在`栈`空间分配内存，这也是其他基本数据类型的分配内存方式；
+- 字符串指针初始化时，如果不对其赋初值，那么必须使其指向`NULL`，其内存空间为`0x00`;
+- 系统中程序员分配的空间为堆空间，可以使用`malloc`函数初始化申请空间。并且所有malloc申请的内存空间都要进行`判空`操作，且在用完后都要进行`free`释放内存。
+
+![pic](./assets/pic-1706251623850-3.jpg)
+
+## 15. 堆泄漏
+
+有三种堆泄漏的情况
+
+- `野指针`：声明指针类型数据，但是没有初始化，如`char *ptr;`。
+- `malloc申请的内存空间没有释放`。
+- `踩内存`：访问了原本不属于变量自己的内存空间就叫做踩内存，一般发生在数组中。如`int array[20]; array[21] = 0;`。
+
+检查内存泄漏的命令：
+
+```cmd
+valgrind --tool=memcheck --leak-check=yes --show-reachable=yes ./[需要检查的.exe文件]
+```
+
+## 16. 指针即数组
+
+声明数组变量：
+
+```c
+int arrray[20];
+```
+
+上述代码等价于`int[20] array `
+
+- 表示变量`array`是一个有`20个int空间`的数组类型变量。
+- 同时`array`也是这20个数组空间的首地址。
+- `array`与`&array[0]`是相同的。
+- 同时`array`与`&array[0]`都是地址数据，同时也是指针类型的变量。
+
+`tip`：数组作为函数变量时会自动退化为指针，因此数组作为函数变量时必须指定数组的长度。
+
+例如：
+
+```c
+int main(int argc, char const *argv[])
+{
+    return 0;
+}
+```
+
+- `argc`为传入参数的个数
+
+- `argv`为传入参数的地址列表
+
+## 17. 二维数组与二维指针
+
+**二维数组是由一维数组构成的：**
+
+`int array[ROW][COLUMN]`，`加一`作用于不同的变量，它加上的值是不同的：
+
+- `array`，array为二级指针，即指向指针的指针。`+1`作用于`array`，`array`的值加上`4 * COLUMN`。
+- `*array`或者`array[x]`，它们都是一级指针。`+1`作用于它们，它们的值加上`4`.
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+#define ROW 3
+#define COLUMN 3
+
+// 二维数组
+int main()
+{
+#if 0
+    int array[3];
+
+    array[0] = 1;
+    array[1] = 1;
+    array[2] = 1;
+    // 不是自己的空间不能放
+    array[3] = 1;
+#endif
+
+#if 1
+    int array[ROW][COLUMN];
+    memset(array, 0, sizeof(array));
+    /*  1.占用内存大小 */
+    int len = sizeof(array);
+    printf("len:%d\n", len);
+
+    /*  2.赋值 */
+    // a[0][0] = 0;
+    int value = 1;
+    for (int idx = 0; idx < ROW; idx++)
+    {
+        for (int jdx = 0; jdx < COLUMN; jdx++)
+        {
+            array[idx][jdx] = value++;
+        }
+    }
+
+    printf("array = %p\n", array);
+    printf("array + 1 = %p\n", array + 1);
+    printf("array[0] = %p\n", array[0]);
+    printf("array[0] + 1 = %p\n", array[0] + 1);
+    printf("*array = %p\n", *array);
+    printf("*array + 1 = %p\n", *array + 1);
+    printf("*(array[0]) = %d\n", *(array[0]));
+    printf("**array = %d\n", **array);
+    printf("&(**array) = %p\n", &(**array));
+
+    printf("-----------------------\n");
+
+    printf("array[1][2] = %d\n", array[1][2]);
+    printf("*(*(array + 1) + 2) = %d\n", *(*(array + 1) + 2));
+
+    printf("&array[1][2] = %p\n", &array[1][2]);
+    printf("(*(array + 1) + 2) = %p\n", *(array + 1) + 2);
+
+    // array[1]  = *(array + 1)
+    printf("(array[1] + 2) = %p\n", (array[1] + 2));
+    // 每一行对应的地址
+    printf("array[1] = %p\n", array[1]);
+#endif
+}
+```
+
+上述代码打印结果：
+
+```cmd
+root@iZbp11t02fism5k702usgjZ:/home/257class/BasiC/BasiC/array# ./a.out
+len:36
+array = 0x7ffdfb683c80
+array + 1 = 0x7ffdfb683c8c
+array[0] = 0x7ffdfb683c80
+array[0] + 1 = 0x7ffdfb683c84
+*array = 0x7ffdfb683c80
+*array + 1 = 0x7ffdfb683c84
+*(array[0]) = 1
+**array = 1
+&(**array) = 0x7ffdfb683c80
+-----------------------
+array[1][2] = 6
+*(*(array + 1) + 2) = 6
+&array[1][2] = 0x7ffdfb683c94
+(*(array + 1) + 2) = 0x7ffdfb683c94
+(array[1] + 2) = 0x7ffdfb683c94
+array[1] = 0x7ffdfb683c8c
+root@iZbp11t02fism5k702usgjZ:/home/257class/BasiC/BasiC/array# 
+```
+
+![image-20240126154436534](./assets/image-20240126154436534.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
