@@ -229,11 +229,11 @@ git仓库文件状态：
 
 命令格式：`git commit [file1] [file2] ... -m [message]`
 
-命令参数：`-m` `-am` `-amemd`
+命令参数：`-m` `-am` `--amemd`
 
 - `[message]` 保存此次修改描述信息；
 - `-am` 跳过git add 直接提交工作内容；
-- `-amend` 当开发过程中备注信息填写错误时，可以使用 `git commit -amend -m [message]` 修改备注信息。
+- `--amend` 当开发过程中备注信息填写错误时，可以使用 `git commit --amend -m [message]` 修改备注信息。
 
 ![image-20240122101622967](./assets/image-20240122101622967.png)
 
