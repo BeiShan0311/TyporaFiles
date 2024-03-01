@@ -423,6 +423,7 @@ n # 进入下一行
 p &[变量] # 打印变量地址
 bt # 查看函数栈调用过程，显示栈帧
 f # 到指定的栈帧
+set pr pr # 设置打印格式
 ```
 
 `tip`：使用`gdb`调试检查程序段错误`Segmentation fault (core dumped)`。
