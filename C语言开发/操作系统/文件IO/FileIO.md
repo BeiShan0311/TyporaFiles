@@ -37,7 +37,7 @@
 
    - `S_IRUSR`：用户拥有读权限（00400）
    - `S_IWUSR`：用户拥有写权限（00200）
-   - `S_IXUSR`：用户拥有执行权限（00100）
+   - `S_IXUSR`：用户拥有执行权限（00100）0000 0000 0001 0001 0001
    - `S_IRWXG`：组拥有读，写，执行权限  （00070）
    - `S_IRGRP`：组拥有读权限（00040）
    - `S_IWGRP`：组拥有写权限（00020）
@@ -285,7 +285,76 @@
      - `DT_SOCK` (12)：表示目录项是一个套接字。
    - `d_name`文件名称。
 
-   
+10. `stat`查看文件信息。
+
+    **函数作用：**
+
+    查看文件状态信息。
+
+    **函数声明：**
+
+    ```c
+    int stat(const char *path, struct stat *buf);
+    ```
+
+    **函数参数：**
+
+    `const char *path`文件路径。
+
+    `struct stat *buf` 存储文件状态信息的传出参数。
+
+    **函数返回值：**
+
+    查询成功返回`0`。
+
+    查询失败返回`-1`。
+
+    **函数传出参数：**
+
+    ```c
+    struct stat {
+        dev_t     st_dev;         /* ID of device containing file */
+        ino_t     st_ino;         /* inode number */
+        mode_t    st_mode;        /* protection */
+        nlink_t   st_nlink;       /* number of hard links */
+        uid_t     st_uid;         /* user ID of owner */
+        gid_t     st_gid;         /* group ID of owner */
+        off_t     st_size;        /* total size, in bytes */
+        blksize_t st_blksize;     /* blocksize for filesystem I/O */
+        blkcnt_t  st_blocks;      /* number of 512B blocks allocated */
+        time_t    st_atime;       /* time of last access */
+        time_t    st_mtime;       /* time of last modification */
+        time_t    st_ctime;       /* time of last status change */
+    };
+    
+    // 打印时间
+    localtime(&(statBuffer.st_atime));
+    printf("atime:%s\n", ctime(&(statBuffer.st_atime)));
+    ```
+
+11. `getcwd()`获取当前工作路径
+
+    **函数作用：**
+
+    查看当前工作路径。
+
+    **函数声明：**
+
+    ```c
+    char *getcwd(char *buf, size_t size);
+    ```
+
+    **函数参数：**
+
+    `char *buf`存放传出的当前工作路径。
+
+    `size_t size` 缓冲区大小。
+
+    **函数返回值：**
+
+    查询成功返回当前的工作路径。
+
+    查询失败返回`NULL`。
 
 
 
