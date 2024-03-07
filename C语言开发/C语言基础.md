@@ -424,6 +424,9 @@ p &[变量] # 打印变量地址
 bt # 查看函数栈调用过程，显示栈帧
 f # 到指定的栈帧
 set pr pr # 设置打印格式
+info thread # 查看进程
+thread [线程序号] # 进入指定的线程
+l # 查看代码
 ```
 
 `tip`：使用`gdb`调试检查程序段错误`Segmentation fault (core dumped)`。
@@ -696,7 +699,7 @@ root@iZbp11t02fism5k702usgjZ:/home/257class/BasiC/BasiC/array#
 
    `gcc -c [编译文件名.s]`
 
-4. 链接
+4. **链接**
 
    目标：生成`.exe`文件
 
