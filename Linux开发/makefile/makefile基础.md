@@ -502,7 +502,9 @@ $(AR) -r $(target) $^
 
 [`OpenAI`](https://chat18.aichatos.xyz/#/chat/1706331925787)吧，别烦了。
 
+## 12. 查看文件所依赖的库
 
+`ldd` - 查询项目的依赖文件
 
 
 
